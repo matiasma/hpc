@@ -129,4 +129,3 @@ done
 sudo service pbs_server restart >> /tmp/azuredeploy.log.$$ 2>&1
 
 exit 0
-
