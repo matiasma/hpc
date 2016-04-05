@@ -8,12 +8,18 @@
         "description": "Unique public dns name where the master node will be exposed"
       }
     },
-    "newStorageAccountName": {
+    "StorageAccountName": {
       "type": "string",
       "metadata": {
         "description": "Unique DNS Name for the Storage Account where the Virtual Machine's disks will be placed."
       }
     },
+    "vhdfile": {
+            "type": "String",
+            "metadata": {
+                "description": "URL completa do VHD imagem do JBoss"
+            }
+        },
     "adminUserName": {
       "type": "string",
       "metadata": {
@@ -93,7 +99,7 @@
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
-      "name": "[parameters('newStorageAccountName')]",
+      "name": "[parameters('StorageAccountName')]",
       "apiVersion": "2015-06-15",
       "location": "[parameters('location')]",
       "properties": {
@@ -166,7 +172,7 @@
       "name": "[variables('masterVMName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', parameters('newStorageAccountName'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('StorageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
       ],
       "properties": {
@@ -179,19 +185,17 @@
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
-          "imageReference": {
-            "publisher": "[variables('imagePublisher')]",
-            "offer": "[variables('imageOffer')]",
-            "sku": "[variables('ubuntuOSVersion')]",
-            "version": "latest"
-          },
           "osDisk": {
-            "name": "osdisk",
-            "vhd": {
-              "uri": "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),variables('masterVMName'),'.vhd')]"
+            "osType": "Linux",
+            "name": "[variables('masterVMName')]",
+            "createOption": "fromImage",
+            "image": {
+              "uri": "[parameters('vhdfile')]"
             },
-            "caching": "ReadWrite",
-            "createOption": "FromImage"
+            "vhd": {
+              "uri": "[concat(concat(reference(resourceId(resourceGroup().name, 'Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2015-06-15').primaryEndpoints['blob'], 'vhds/'), variables('masterVMName'), '201622292517.vhd')]"
+            },
+            "caching": "ReadWrite"
           }
         },
         "networkProfile": {
@@ -258,7 +262,7 @@
       "name": "[concat(variables('workerVMName'), copyindex())]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', parameters('newStorageAccountName'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('StorageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'), 'worker', copyindex())]"
       ],
       "copy": {
@@ -282,12 +286,16 @@
             "version": "latest"
           },
           "osDisk": {
+            "osType": "Linux",
             "name": "osdisk",
-            "vhd": {
-              "uri": "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),variables('workerVMName'),copyindex(),'.vhd')]"
+             "createOption": "fromImage",
+            "image": {
+              "uri": "[parameters('vhdfile')]"
             },
-            "caching": "ReadWrite",
-            "createOption": "FromImage"
+            "vhd": {
+              "uri": "[concat('http://',parameters('StorageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),variables('workerVMName'),copyindex(),'.vhd')]"
+            },
+            "caching": "ReadWrite"
           }
         },
         "networkProfile": {
