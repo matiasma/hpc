@@ -39,7 +39,7 @@
         "Standard_D1",
         "Standard_D2",
         "Standard_D3",
-        "Standard_D4"
+        "Standard_A8"
       ],
       "metadata": {
         "description": "Size of the nodes."
@@ -136,6 +136,12 @@
         }
       }
     },
+      {
+        "type": "Microsoft.Compute/availabilitySets",
+        "name": "[parameters('dnsName')]",
+        "apiVersion": "2015-06-15",
+        "location": "[parameters('location')]"
+    },
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/networkInterfaces",
@@ -173,6 +179,9 @@
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
       ],
       "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('dnsName'))]"
+        },
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
         },
@@ -267,6 +276,9 @@
         "count": "[parameters('scaleNumber')]"
       },
       "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('dnsName'))]"
+        },
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
         },
