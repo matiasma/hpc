@@ -47,6 +47,7 @@ if ! [ -f /home/$ADMIN_USERNAME/.ssh/id_rsa ]; then
 fi
 
 # Install sshpass to automate ssh-copy-id action
+sudo yum install -y wget >> /tmp/azuredeploy.log.$$ 2>&1
 sudo yum install -y epel-release >> /tmp/azuredeploy.log.$$ 2>&1
 sudo yum install -y sshpass >> /tmp/azuredeploy.log.$$ 2>&1
 
