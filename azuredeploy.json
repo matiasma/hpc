@@ -61,9 +61,6 @@
     }
   },
   "variables": {
-    "imagePublisher": "OpenLogic",
-    "imageOffer": "CentOS",
-    "ubuntuOSVersion": "7.1",
     "vmStorageAccountContainerName": "vhd",
     "OSDiskName": "osdisk",
     "publicIPAddressType": "Dynamic",
@@ -279,13 +276,7 @@
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
-          "imageReference": {
-            "publisher": "[variables('imagePublisher')]",
-            "offer": "[variables('imageOffer')]",
-            "sku": "[variables('ubuntuOSVersion')]",
-            "version": "latest"
-          },
-          "osDisk": {
+           "osDisk": {
             "osType": "Linux",
             "name": "osdisk",
              "createOption": "fromImage",
